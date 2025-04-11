@@ -10,14 +10,7 @@ const wineSchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: { type: String, 
     required: true,
-    validate: {
-        validator: function (value) {
-          // Expresión regular para validar URLs (http, https, con o sin www)
-          return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|svg))$/.test(value);
-        },
-        message: 'The image must be a valid URL ending in .png, .jpg, .jpeg, .gif, .webp, or .svg.'
-      }
-     },
+    },
   price: { type: Number, required: true ,
     min: [0, 'The price cannot be negative.'],
     validate: {
