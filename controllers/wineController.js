@@ -51,6 +51,57 @@ const wineController ={
       } catch (error) {
           console.error('Error al traer los vinos', error);
       }
+  },
+
+  async getWineById (req, res) {
+    try {
+        const wineId = await WineModel.findById(req.params._id)
+        res.status(200).json({ mensaje: 'Found wine', wineId })
+    } catch (error) {
+        console.error('Error Found wine', error);
+    }
+},
+async updateWine(req, res) {
+  try {
+    const { id } = req.params; // ID del vino desde la URL
+    const { name, description, price, tastingNotes } = req.body;
+
+    const wine = await WineModel.findById(id);
+    if (!wine) {
+      return res.status(404).json({ error: "Wine not found." });
+    }
+
+    // Si se subió una nueva imagen, reemplazamos la anterior
+    if (req.file) {
+      wine.image = req.file.path;
+    }
+
+    if (name) wine.name = name;
+    if (description) wine.description = description;
+    if (price) wine.price = price;
+
+    if (tastingNotes) {
+      if (tastingNotes.vista) wine.tastingNotes.vista = tastingNotes.vista;
+      if (tastingNotes.nariz) wine.tastingNotes.nariz = tastingNotes.nariz;
+      if (tastingNotes.boca) wine.tastingNotes.boca = tastingNotes.boca;
+    }
+
+    await wine.save();
+
+    res.status(200).json({ message: "Wine updated successfully.", wine });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "There was a problem trying to update the wine." });
+  }
+},
+
+  async deleteWine (req, res) {
+    try {
+      const wineId = await WineModel.findByIdAndDelete(req.params._id)
+      res.status(200).json({ mensaje: 'wine removed' })
+  } catch (error) {
+      console.error('Error deleting wine', error);
+  }
   }
 }
 

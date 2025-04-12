@@ -2,7 +2,7 @@ const express =require ('express');
 require('dotenv').config();
 const {dbConnection} =require ('./config/config')
 const routes=require('./routes/wineRoutes');
-
+const contactRoutes = require('./routes/contact');
 
 
 const app=express();
@@ -28,8 +28,10 @@ app.use((err, req, res, next) => {
   
 
 app.use('/', routes);
+app.use('/', contactRoutes); 
 
 dbConnection();
+
 
 app.listen(PORT,()=>{
     console.log(`Server started on port http://localhost:${PORT}`)
