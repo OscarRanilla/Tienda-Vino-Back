@@ -3,11 +3,14 @@ require('dotenv').config();
 const {dbConnection} =require ('./config/config')
 const routes=require('./routes/wineRoutes');
 const contactRoutes = require('./routes/contact');
+const cors=require('cors');
 
 
 const app=express();
 const PORT =process.env.PORT || 3000;
 
+//middelwares cors. con este Cors permite que todas nuestras rutas puedan entrar
+app.use(cors())
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
