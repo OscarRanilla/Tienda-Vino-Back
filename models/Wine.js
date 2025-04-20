@@ -21,6 +21,7 @@ const wineSchema = new mongoose.Schema({
     }
   },
   description: { type: String, required: true },
+  category:{ type: String, required: true },
   tastingNotes: {
     type: tastingNotesSchema,
     required: true,

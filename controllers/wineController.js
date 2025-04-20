@@ -6,14 +6,14 @@ const wineController ={
 
     async createWine (req, res) {
         try {
-             const { name, image,description, price,  tastingNotes} = req.body;
+             const { name, image,price,description, category, tastingNotes} = req.body;
        
              if (!req.file) return res.status(400).json({ error: 'Image is required.' });
             
              if (!name) return res.status(400).json({ error: "Name is required." });
              if (!description) return res.status(400).json({ error: "Description is required." });
              if (!price) return res.status(400).json({ error: "Price is required." });
-             
+             if (!category) return res.status(400).json({error:"Category is required"});
              if (!tastingNotes ||  !tastingNotes.vista ||   !tastingNotes.nariz ||  !tastingNotes.boca) {
                return res.status(400).json({ error: "Tasting notes (vista, nariz, boca) are required." });
              }
@@ -21,7 +21,7 @@ const wineController ={
              
              const newWine= { name, 
               image: req.file.path, // URL que devuelve Cloudinary,
-              description, price,   
+              price, description,  category, 
              tastingNotes: {
               vista: tastingNotes.vista,
               nariz: tastingNotes.nariz,
@@ -64,7 +64,7 @@ const wineController ={
 async updateWine(req, res) {
   try {
     const { id } = req.params; // ID del vino desde la URL
-    const { name, description, price, tastingNotes } = req.body;
+    const { name, price, description, category, tastingNotes } = req.body;
 
     const wine = await WineModel.findById(id);
     if (!wine) {
@@ -78,6 +78,7 @@ async updateWine(req, res) {
 
     if (name) wine.name = name;
     if (description) wine.description = description;
+    if (category) wine.category = category;
     if (price) wine.price = price;
 
     if (tastingNotes) {
