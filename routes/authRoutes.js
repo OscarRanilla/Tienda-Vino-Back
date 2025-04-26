@@ -16,14 +16,7 @@ router.get('/checkSession',authController.getCurrentUser)
 
 
 // Ruta protegida (requiere cookie con token válido)
-router.get('/dashboard', authMiddleware, (req, res) => {
-    console.log('Entrta en Dashboard')
-    res.json({
-      success: true,
-      message: "Bienvenido al dashboard",
-      user: req.user // opcional: retorna el usuario extraído del token
-    });
-  });
+router.get('/dashboard', authMiddleware, authController.getDashboard);
 
 
 module.exports =router;

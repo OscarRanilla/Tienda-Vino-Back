@@ -11,7 +11,8 @@ router.get('/', wineController.getAllWines)
 
 
 // - GET /id/:_id: busca un vino por id.
-router.get('/id/:_id', wineController.getWineById)
+//router.get('/id/:_id', wineController.getWineById)
+router.get('/:_id', wineController.getWineById)
 
 //Elimina un vino
 router.delete('/id/:_id', wineController.deleteWine)

@@ -1,10 +1,11 @@
 const transporter = require('../utils/mailer');
+const logger = require('../utils/logger'); 
 
 const sendContactEmail = async (req, res) => {
   const { name, phone, address, email, mensaje } = req.body;
 
   if (!name || !phone || !address || !email || !mensaje) {
-    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
+    return res.status(400).json({ error: 'All fields are required.' });
   }
 
   const mailOptions = {
@@ -23,10 +24,10 @@ const sendContactEmail = async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Mensaje enviado con éxito.' });
+    res.status(200).json({ message: 'Message sent successfully.' });
   } catch (error) {
-    console.error('Error al enviar el correo:', error);
-    res.status(500).json({ error: 'Error al enviar el mensaje.' });
+    logger.error("Error sending email: %s", error.message);
+    res.status(500).json({ error: 'Error sending message.' });
   }
 };
 

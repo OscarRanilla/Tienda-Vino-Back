@@ -2,7 +2,7 @@ const { auth, db } = require("../config/firebaseAdmin");
 
 async function getUserFromToken(token) {
     if (!token) {
-        throw new Error("Token no proporcionado");
+        throw new Error("Token not provided");
   }
 
   const decodedToken = await auth.verifyIdToken(token);
@@ -11,7 +11,7 @@ async function getUserFromToken(token) {
   const userDoc = await db.collection("users").doc(uid).get();
 
   if (!userDoc.exists) {
-     throw new Error("Usuario no encontrado");
+     throw new Error("User not found");
   }
 
   return userDoc.data();

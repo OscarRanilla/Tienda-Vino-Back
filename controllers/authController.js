@@ -1,14 +1,14 @@
 require('dotenv').config();
-const { auth, db } = require("../config/firebaseAdmin"); //  Importamos db también
+const { auth, db } = require("../config/firebaseAdmin"); 
 const { getUserFromToken } = require("../services/authService");
-
+const logger = require('../utils/logger'); 
 
 const  authController ={
     async verifyToken(req, res) {
         const { idToken } = req.body;
-    
+
         if (!idToken) {
-          return res.status(400).json({ success: false, message: "Token no recibido" });
+          return res.status(400).json({ success: false, message: "Token not received" });
         }
       
         try {
@@ -16,7 +16,7 @@ const  authController ={
           //Lo guarda en la cookie el token
           res.cookie(process.env.SECRET_WORD, idToken, {
             httpOnly: true,
-            secure: false,         // false en localhost (sin HTTPS)
+            secure: true,         // false en localhost (sin HTTPS)
             sameSite: 'Lax'        // en localhost funciona mejor así
            // sameSite: "None",
           });
@@ -25,11 +25,11 @@ const  authController ={
       
           return res.json({
             success: true,
-            message: "Token verificado y usuario encontrado",
+            message: "Token verified and user found",
             user: userData,
           });
         } catch (error) {
-          console.error("Error en verifyToken:", error.message);
+          logger.error("Error in verifyToken: %s", error.message);  
           return res.status(401).json({ success: false, message: error.message });
         }
       },
@@ -44,14 +44,14 @@ const  authController ={
             user: userData,
           });
         } catch (error) {
-          console.error("Error en getCurrentUser:", error.message);
+          logger.error("Error in getCurrentUser: %s", error.message); 
           return res.status(401).json({ success: false, message: error.message });
         }
       },
 
     async logout(req, res) {
         res.clearCookie(process.env.SECRET_WORD);
-        return res.json({ success: true, message: "Sesión cerrada" });
+        return res.json({ success: true, message: "Session closed" });
     },
 
 
@@ -75,25 +75,38 @@ const  authController ={
                     createdAt: new Date()
                 });
               } catch (firestoreError) {
-                console.error("Error al guardar en Firestore:", firestoreError.message);
-                return res.status(500).json({ success: false, message: "Usuario creado, pero error al guardar datos." });
+                logger.error("Error saving to Firestore: %s", firestoreError.message);
+                return res.status(500).json({ success: false, message: "User created, but error saving data." });
               }
     
 
-            res.json({ success: true, message: "Usuario creado y guardado en Firestore" });
+            res.json({ success: true, message: "User created and saved in Firestore" });
         } catch (error) {
-            console.error(`Error interno de registro: ${error}`);
+            logger.error("Error interno de registro: %s", error.message);
 
             switch (error.code) {
                 case 'auth/email-already-exists':
-                  return res.status(400).json({ success: false, message: "Ese correo ya está registrado." });
+                  return res.status(400).json({ success: false, message: "That email is already registered." });
                 case 'auth/invalid-password':
-                  return res.status(400).json({ success: false, message: "Contraseña no válida." });
+                  return res.status(400).json({ success: false, message: "Invalid password." });
                 default:
-                  return res.status(500).json({ success: false, message: "Error al crear el usuario." });
+                  return res.status(500).json({ success: false, message: "Error creating user." });
               }
         }
+    },
+    async getDashboard(req, res) {
+      try {
+        return res.json({
+          success: true,
+          message: "Bienvenido al dashboard",
+          user: req.user
+        });
+      } catch (error) {
+        logger.error("Error in getDashboard: %s", error.message);
+        return res.status(500).json({ success: false, message: "Error loading dashboard" });
+      }
     }
+    
     
 
     

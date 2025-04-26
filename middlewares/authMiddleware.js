@@ -1,6 +1,8 @@
 const { getApps, initializeApp } = require('firebase-admin/app');
 if (!getApps().length) initializeApp();
 require('dotenv').config();
+const logger = require('../utils/logger'); 
+
 
 
 const { auth} = require("../config/firebaseAdmin"); 
@@ -8,12 +10,8 @@ const { auth} = require("../config/firebaseAdmin");
 const authVerification = (req, res, next) => {
     const tokenCookie = req.cookies[process.env.SECRET_WORD]; 
 
-    console.log('Token en midelware: ' + tokenCookie)
-
     if (!tokenCookie) {
-       // return res.redirect('/login');  // Usar return para detener el flujo
-        console.error("Error en authVerification: No ha token");
-        return res.status(401).json({ success: false, message: "No hay token" });
+        return res.status(401).json({ success: false, message: "There is no token" });
     }
 
     auth.verifyIdToken(tokenCookie)
@@ -22,8 +20,8 @@ const authVerification = (req, res, next) => {
             next();
         })
         .catch((error) => {
-            console.error(`Error al verificar el token de las cookies: ${error}`);
-            res.status(401).json({ success: false, message: "Token inválido" }); // Enviar respuesta de error
+            logger.error("Error verifying cookie token: %s", error.message);
+            res.status(401).json({ success: false, message: "Invalid token" }); // Enviar respuesta de error
         });
 };
 

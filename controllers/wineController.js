@@ -1,6 +1,6 @@
 const  { WineModel }= require('../models/Wine')
 const upload =require('../storage.js')// configuración multer+cloudinary
-
+const logger = require('../utils/logger'); 
 
 const wineController ={
 
@@ -30,14 +30,9 @@ const wineController ={
           
              const wine = await WineModel.create(newWine);
              res.status(201).send({ message: "Wine created successfully.", wine });
-               // Guardar mensaje en la sesión
-            // req.session.message = '¡Producto guardado exitosamente!';
-        
- 
-            // ir a la página con todos los productos
-           //  res.redirect('/dashboard');
+            
          } catch (error) {
-             console.error(error);
+             logger.error("Error creating wine: %s", error.message);
              res
                  .status(500)
                  .send({ message: "There was a problem trying to create a wine" });
@@ -49,7 +44,7 @@ const wineController ={
           const wines = await WineModel.find()
           res.status(200).json({ mensaje: 'All wines', wines })
       } catch (error) {
-          console.error('Error al traer los vinos', error);
+          logger.error("Error bringing the wines: %s", error.message);
       }
   },
 
@@ -58,7 +53,7 @@ const wineController ={
         const wineId = await WineModel.findById(req.params._id)
         res.status(200).json({ mensaje: 'Found wine', wineId })
     } catch (error) {
-        console.error('Error Found wine', error);
+        logger.error("Error Found wine: %s", error.message);
     }
 },
 async updateWine(req, res) {
@@ -91,7 +86,7 @@ async updateWine(req, res) {
 
     res.status(200).json({ message: "Wine updated successfully.", wine });
   } catch (error) {
-    console.error(error);
+    logger.error("Error updating wine: %s", error.message);
     res.status(500).json({ message: "There was a problem trying to update the wine." });
   }
 },
@@ -101,7 +96,7 @@ async updateWine(req, res) {
       const wineId = await WineModel.findByIdAndDelete(req.params._id)
       res.status(200).json({ mensaje: 'wine removed' })
   } catch (error) {
-      console.error('Error deleting wine', error);
+      logger.error("Error deleting wine: %s", error.message);
   }
   }
 }
